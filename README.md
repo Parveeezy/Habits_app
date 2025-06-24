@@ -1,0 +1,1 @@
+The application is created using HTML, CSS, JS
