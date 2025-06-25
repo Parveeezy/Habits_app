@@ -2,6 +2,7 @@
 
 let habbits = [];
 const HABBIT_KEY = "HABBIT_KEY";
+let globalActiveHabbitId;
 
 /* page */
 const page = {
@@ -75,22 +76,66 @@ function RenderContent(activeHabbit) {
     const element = document.createElement("div");
     element.classList.add("habbit");
     element.innerHTML = `
-            <div class="habbit__day">День ${+index + 1}</div>
+            <div class="habbit__day">День ${+index}</div>
               <div class="habbit__comment">
                ${activeHabbit.days[index].comment}
               </div>
-              <button class="habbit__delete">
+              <button class="habbit__delete" onclick="deleteDay(${+index})">
                 <img src="./images/delete.svg" alt="Удалить день ${
-                  index + 1
+                  +index
                 }" />
               </button>
     `;
-    page.content.daysContainer.appendChild(element)
+    page.content.daysContainer.appendChild(element);
   }
-  page.content.nextDay.innerHTML = `День ${activeHabbit.days.length + 1}`
+  page.content.nextDay.innerHTML = `День ${activeHabbit.days.length + 1}`;
+}
+
+/* work with days */
+function addDays(event) {
+  event.preventDefault();
+  const form = event.target;
+  const data = new FormData(form);
+  const comment = data.get("comment").trim();
+
+  form["comment"].classList.remove("error");
+  form["button"].classList.remove("error");
+
+  if (!comment) {
+    form["comment"].classList.add("error");
+    form["button"].classList.add("error");
+  }
+  habbits = habbits.map((habbit) => {
+    if (habbit.id === globalActiveHabbitId) {
+      return {
+        ...habbit,
+        days: habbit.days.concat([{ comment }]),
+      };
+    }
+    return habbit;
+  });
+  form["comment"].value = "";
+  rerender(globalActiveHabbitId);
+  saveData();
+}
+
+function deleteDay(index) {
+  habbits = habbits.map((habbit) => {
+    if (habbit.id === globalActiveHabbitId) {
+      habbit.days.splice(index, 1);
+      return {
+        ...habbit,
+        days: habbit.days,
+      };
+    }
+    return habbit;
+  });
+  rerender(globalActiveHabbitId);
+  saveData();
 }
 
 function rerender(activeHabbitId) {
+  globalActiveHabbitId = activeHabbitId;
   const activeHabbit = habbits.find((habbit) => habbit.id === activeHabbitId);
   if (!activeHabbit) {
     return;
@@ -99,6 +144,8 @@ function rerender(activeHabbitId) {
   rerenderHead(activeHabbit);
   RenderContent(activeHabbit);
 }
+
+console.log(habbits);
 
 /* init */
 (() => {

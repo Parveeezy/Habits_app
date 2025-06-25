@@ -207,6 +207,10 @@ input {
     width: 100%;
 }
 
+.error {
+    border: 1px solid red;
+}
+
 .input_icon {
     padding-left: 40px;
 }
@@ -232,4 +236,8 @@ input {
 
 .button:hover {
     background-color: #EFF2FF;
+}
+
+.error {
+    border: 1px solid red;
 }
